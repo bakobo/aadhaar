@@ -45,37 +45,31 @@ If this repo has no `this.i` yet and warrants one, see [`dev/methodology.md`](..
 §2 and the shipped `this.i.seed`. A trivial repo (pure content/assets/config, where no one will
 later need to know *why*) may skip intent entirely — just delete `this.i.seed`.
 
-## Testing Protocol
+## This is a content repo, and it is empty
 
-This repository appears to have no test suite yet. Before writing feature code
-or fixing bugs, propose an appropriate testing framework for this project type
-and add a single trivially-passing test to confirm the setup works. In the
-same commit, propose to change AGENTS.md to replace this instruction with one
-that instructs agents to follow strict TDD from now on: write failing tests
-that capture happy path and edge cases/unhappy paths for each requirement,
-observe them fail, implement until tests pass, never checkin without proving
-that all tests pass, aim for 100% of all new code, and always leave existing
-code better tested than it was before you touched it.
+The product will be the corpus and the registry, not software. Code and tests live in
+[`id-law-kit`](../id-law-kit); `tools/` here will be a thin harvesting layer over it. There is no
+CI beyond the template's review gate, deliberately: nothing here builds.
 
-## CI and Documentation
+Nothing has been harvested yet. Read `README.md` for the reconnaissance already done — the dead
+ends (`indiacode.nic.in` has OAI-PMH and REST disabled) are recorded so they are not rediscovered.
 
-This repo appears to have no CI workflows yet. Until it does, any time you make
-code changes to the user, propose an appropriate set of GitHub actions (e.g.,
-`.github/workflows/ci.yml`) that builds and runs tests on every push and
-pull request. Propose to remove this instruction from AGENTS.md on the
-same commit.
+## Working rules for this repo
 
-This repository has no README. As long is this is the case, any time you
-make code changes for the user, propose to add a `README.md` that explains how
-to get from a fresh clone to passing tests, with a clickable CI status
-badge at the top for each active workflow. Propose to remove this
-instruction from AGENTS.md on the same commit.
-
-When writing or modifying GitHub Actions workflows, always use the latest
-stable release of each action. Avoid versions pinned to Node.js 16 or
-Node.js 20 (both deprecated by GitHub). In 2026, this meant to prefer Node.js
-24-compatible versions, but the standard may evolve over time. Check the GitHub
-Marketplace for each action's current release.
+1. **Quote-or-drop, and never without a validity banner.** Every claim about Indian law needs a
+   citation *and* a verbatim quote retrievable via `lawcite`. In this repo that is not enough on its
+   own — see rule 2.
+2. **The published Act is not the law.** Section 57 was struck down in 2018 and is still in the PDF
+   UIDAI serves. Every provision needs its validity established from the judgments *before* it is
+   stored, not after. `this.i` @4sxgog: validity is recorded per provision, not per instrument.
+3. **Case law is corpus, not commentary.** `utah-id-law` excludes judicial decisions and says so;
+   that exclusion is defensible there and indefensible here (`this.i` @meihbh).
+4. **Hand-curate the judgments.** Do not build a scraper for five to ten documents that will not
+   change (`this.i` @hyjd5n).
+5. **Counts are pointers to read, never findings.** And interrogate every zero with a positive
+   control before reporting it — see `id-law-kit/docs/method.md` §4.
+6. **State the redistribution basis for Indian government works** when the corpus lands. GODL-India
+   and Copyright Act §52(1)(q) — *not* the US or EU reasoning used in the sibling repos.
 
 <!-- >>> tick stanza >>> (managed by `tick init`) -->
 
