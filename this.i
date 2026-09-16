@@ -170,6 +170,27 @@ A checkable corpus of India's Aadhaar and data-protection regime = goal:
             alone — an inventory comparison was written first, and it cannot see this failure,
             because a schedule at the end of an instrument restarts its numbering and contributes no
             heading the body has not already used.
+          children:
+            The kit's truncation guard is wired where there is no second extraction = decision:
+              id: giyb7fgi
+              why: >
+                `lawcorpus.completeness.check_not_truncated` now offers the same finding as a shape
+                rule: a round length with a non-terminator ending. Measured here on 2026-09-16 it
+                fires on exactly one of the ten publisher texts — the DPDP Rules at 100,000 — and on
+                none of the 134 stored texts, not one of which has a round length at all. So it
+                separates on this corpus, and `indian.check_length` already catches that one
+                instrument and catches it better, because a ratio against our own extraction says
+                *why* rather than only that the length looks like a cap.
+                Chose to wire the kit's guard where `check_length` cannot reach: the judgments, which
+                are fetched from api.sci.gov.in with no second extraction to compare against, and
+                India Code's ACT-level text of the DPDP Act, which the oracle reads and which is the
+                same artefact class that truncated. On the delegated layer it joins `check_length` as
+                a second trigger for the same fallback rather than overriding it.
+                Rejected: replacing `check_length`. It compares two extractions and is evidence about
+                the document in hand; a round length is a coincidence one document in a thousand has,
+                and a guard that fires on a coincidence is one somebody turns off. Rejected also:
+                letting it abort the delegated layer, which would undo this node's own decision to
+                store the DPDP Rules from our own extraction.
 
         Soundness is measured in windows, and where the measurement runs out, a person reads = decision:
           id: nppnqlxn
@@ -211,6 +232,43 @@ A checkable corpus of India's Aadhaar and data-protection regime = goal:
         insertion is caught by an oracle that can see one.
         Rejected: discarding the chain as unreliable. It is not unreliable, it is partial, and an
         oracle whose blind spot is known and written down is worth more than no oracle.
+
+    The kit's cleaning moved under the judgments, and the corpus takes the move = decision:
+      id: lro55aps
+      why: >
+        Re-harvested against id-law-kit a0bad96 on 2026-09-16. Four of the 134 stored texts changed,
+        and no prose moved in any of them: over all four, every token the new extraction lost is a
+        bare number or the word `page`, and none gained a token. What moved is line structure, and
+        it moved in the wrong direction. `lawcorpus.pdf` now compiles every drafting tradition into
+        one opener pattern by default, and the `indonesian` entry's `[a-z0-9]{1,3}\.[ \t]` matches
+        ordinary English wraps — `v.`, `law.`, `it.`, `to.`, `up.`, `etc.` — so the rejoiner refuses
+        83 joins across the three judgments that it used to make: 45 in PUTTASWAMY-2018-SCR, 27 in
+        PUTTASWAMY-2018, 11 in PUTTASWAMY-2017, and 0 in the one instrument that is half Hindi.
+        Re-extracting the SCR judgment with `structural_pattern("common-law")` restores every one of
+        the 45 and returns the file from 4,565 lines to 4,520, which is the isolation.
+        The harm is the one the rejoiner exists to prevent. `lawcorpus.cite.Corpus.grep` reports
+        lines, so a phrase spanning a refused join cannot be found: `Mahant Moti Das v. S.P. Sahi`
+        and `Maharashtra University of Health Sciences v. Satchikitsa` are in these judgments and
+        both go from one line-hit to zero; `separation of powers and rule of law` goes 3 to 2 and
+        `correctness or lack of it` 4 to 3. Their left halves still hit, which is the positive
+        control.
+        Chose to store what the kit produces and report the defect with the measurement, rather than
+        rebind `lawcorpus.pdf._STRUCTURAL` from `tools/harvest.py`. `extract` takes no `traditions=`
+        argument, so a consumer that knows its tradition cannot narrow the pattern without reaching
+        into another package's private module global — and a local patch would hide from the other
+        six corpora a defect every Latin-script one of them has. ~2j4h
+        Rejected: keeping the previous text. A corpus in the tree that no current run of the
+        harvester reproduces is exactly what the manifest exists to make impossible, and the
+        repo would have traded a findable defect for an invisible one.
+        The second change is smaller and points the same way. `FURNITURE_LINES = 8` reaches deeper
+        than the old window, so PUTTASWAMY-2017's footnote markers — 192 bare numbers, sequential
+        and increasing down the page exactly as a page number is — are now stripped, and `_counts_up`
+        has no way to tell the two apart. Two footnote *contents* went with them in PUTTASWAMY-2018:
+        `page 420` in footnote 83 and `page 5` in footnote 159 both match `_PAGE_NUMBER` in full. ~45l7
+        And one thing the round got right, confirmed here rather than taken on trust: measured
+        directly, `watermark_share` on PUTTASWAMY-2018-SCR is 0.998 against a bar of 0.50, so the
+        previous `verify_order=True` default would have refused the Supreme Court Reports outright,
+        and PUTTASWAMY-2018 sits at 0.405, within one bad page of the same.
 
     Redistribution rests on Copyright Act §52(1)(q), split three ways, and not on GODL = decision:
       id: 5lrzngtg
