@@ -79,31 +79,51 @@ If this repo has no `this.i` yet and warrants one, see [`dev/methodology.md`](..
 §2 and the shipped `this.i.seed`. A trivial repo (pure content/assets/config, where no one will
 later need to know *why*) may skip intent entirely — just delete `this.i.seed`.
 
-## This is a content repo, and it is empty
+## This is a content repo, and it is harvested
 
-The product will be the corpus and the registry, not software. Code and tests live in
-[`id-law-kit`](../id-law-kit); `tools/` here will be a thin harvesting layer over it. There is no
-CI beyond the template's review gate, deliberately: nothing here builds.
+The product is the corpus and the registry, not software. Code and tests live in
+[`id-law-kit`](../id-law-kit); `tools/` here is a thin harvesting layer over it. There is no CI
+beyond the template's review gate, deliberately: nothing here builds.
 
-Nothing has been harvested yet. Read `README.md` for the reconnaissance already done — the dead
-ends (`indiacode.nic.in` has OAI-PMH and REST disabled) are recorded so they are not rediscovered.
+Harvested 2026-09-16: 134 items across `corpus-acts/` (provision grain), `corpus-delegated/`
+(instrument grain) and `corpus-judgments/`. Set up with
+`python3 -m venv .venv && .venv/bin/pip install -e ../id-law-kit`, then `tools/verify.py` and
+`tools/check-quotes.py` must both pass before you believe anything here. **Do not edit `id-law-kit`
+from this repo.**
+
+`sources/registry.md` is where the things a manifest has no column for are written down — the
+oracles, the refusals, the unreachable hosts, the extraction failures. Read it before re-running a
+probe that has already been run.
 
 ## Working rules for this repo
 
 1. **Quote-or-drop, and never without a validity banner.** Every claim about Indian law needs a
-   citation *and* a verbatim quote retrievable via `lawcite`. In this repo that is not enough on its
-   own — see rule 2.
-2. **The published Act is not the law.** Section 57 was struck down in 2018 and is still in the PDF
-   UIDAI serves. Every provision needs its validity established from the judgments *before* it is
-   stored, not after. `this.i` @4sxgog: validity is recorded per provision, not per instrument.
-3. **Case law is corpus, not commentary.** `utah-id-law` excludes judicial decisions and says so;
-   that exclusion is defensible there and indefensible here (`this.i` @meihbh).
-4. **Hand-curate the judgments.** Do not build a scraper for five to ten documents that will not
-   change (`this.i` @hyjd5n).
-5. **Counts are pointers to read, never findings.** And interrogate every zero with a positive
-   control before reporting it — see `id-law-kit/docs/method.md` §4.
-6. **State the redistribution basis for Indian government works** when the corpus lands. GODL-India
-   and Copyright Act §52(1)(q) — *not* the US or EU reasoning used in the sibling repos.
+   citation *and* a verbatim quote retrievable via `lawcite`. `tools/check-quotes.py` enforces it
+   over `findings/`; a finding that does not pass it does not get committed.
+2. **The published Act is not the law, and the trap is a footnote.** UIDAI's *consolidated* PDF is
+   right — §57 reads `[Omitted.]`. The annotated edition UIDAI now links reproduces the omitted §57
+   verbatim in a footnote, in quotation marks, under a heading bearing its number. That survives
+   quote-or-drop and is invisible to item-level validity. Prefer India Code's section items, which
+   separate current text from amendment history and are structurally immune (`this.i` @gogceltr).
+3. **Judicial validity is authored in `sources/judicial-overlay.tsv` and nowhere else.** The
+   manifests are generated from it (`this.i` @q3dsvsrl). Never hand-edit a manifest row — re-run the
+   harvest. `tools/verify.py` will catch you.
+4. **Case law is corpus, not commentary** (`this.i` @meihbh), and the judgments are **hand-curated**
+   (`this.i` @hyjd5n). Do not build a scraper: the two search surfaces that would justify one are
+   captcha-gated, and `lawcorpus.fetch.browser` refuses a challenge rather than defeating it.
+5. **Counts are pointers to read, never findings.** Interrogate every zero with a positive control
+   (`id-law-kit/docs/method.md` §4) — **and every 404 too**. The July reconnaissance in this repo
+   recorded a set of reproducing 404s as a fact about India; they were a fact about a hostname that
+   had moved.
+6. **The redistribution basis is Copyright Act §52(1)(q), split three ways by layer**, with the Act
+   layer's exemption conditional on publishing commentary alongside. GODL-India is *not* the basis
+   and was dropped. Do not copy the US or EU reasoning used in the sibling repos (`this.i`
+   @5lrzngtg).
+7. **Extraction here fails in three ways and all of them look fine.** A watermark that reorders, a
+   publisher extraction that truncates at exactly 100,000 characters, and legacy-font Hindi that
+   scores as mojibake beside perfect English. `tools/indian.py` documents each with its measurements.
+   Where the guards run out, a document is refused by hand in `candidates.py` with the reason
+   written there — do not replace that with a tuned threshold.
 
 <!-- >>> tick stanza >>> (managed by `tick init`) -->
 

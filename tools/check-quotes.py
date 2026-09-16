@@ -48,8 +48,11 @@ MIN_FRAGMENT = 14
 _EMPHASIS = re.compile(r"\*\*|\*|`")
 # `…` and `...` are how a finding elides. `[…]` is how it marks a correction it is making visible,
 # and the corrected characters are not in the corpus, so a bracketed span is dropped rather than
-# searched — but only when it is the finding's own bracket, which is why this runs *before* `unmark`.
-_ELISION = re.compile(r"…|\.\.\.|\[[^\]]{0,80}\]")
+# searched. The lookbehind is what keeps that from eating India Code's amendment brackets, which
+# are always preceded by their marker digit: without it, a quotation of section 28 containing
+# `1[sixty years]` was split at the bracket and the fragment ending `shall subsist until 1` matched
+# nothing, because `unmark` had already removed that digit from the corpus side.
+_ELISION = re.compile(r"…|\.\.\.|(?<!\d)\[[^\]]{0,80}\]")
 # India Code's amendment marks: a superscript number rendered as a digit, immediately before the
 # bracket that opens the amended span, and the bracket that closes it.
 _MARK = re.compile(r"\d{1,2}\[|\]")
