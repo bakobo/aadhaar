@@ -1,0 +1,71 @@
+name: CI
+
+# Runs this repo's own integrity checks, not a unit-test suite — because that is what this repo
+# has and what is worth protecting. `tools/verify.py` re-derives every item's validity from the
+# judicial overlay and re-checks each judgment quotation against the judgment, so a hand-edited
+# manifest fails rather than wins; `tools/check-quotes.py` proves every quotation in `findings/`
+# is still retrievable from the corpus. Between them they cover the two ways this corpus can go
+# quietly wrong: a claim about what is still law, and a quote that no longer reproduces.
+#
+# It deliberately does not call India Code or the Supreme Court API. A corpus repo whose badge
+# depends on a foreign government's service goes red for reasons that have nothing to do with the
+# repo, and a refresh is a deliberate local act reviewed as a manifest diff.
+#
+# `tools/` imports `lawcorpus` from the private sibling bakobo/id-law-kit, so CI mints a
+# short-lived token from the bakobo-dependency-reader GitHub App rather than carrying a PAT.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out aadhaar
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Mint a token for the private kit
+        id: kit-reader
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          client-id: Iv23liAQRlNEpCyR1RXt
+          private-key: ${{ secrets.DEP_READER_PRIVATE_KEY }}
+          owner: bakobo
+          repositories: id-law-kit
+
+      # Isolates "the credential is broken" from "the checks are broken". Without it a credential
+      # failure arrives as an unreadable pip error three steps later.
+      - name: Verify the token reaches the kit
+        env:
+          TOKEN: ${{ steps.kit-reader.outputs.token }}
+        run: git ls-remote "https://x-access-token:$TOKEN@github.com/bakobo/id-law-kit" HEAD
+
+      - name: Check out the shared kit
+        uses: actions/checkout@v6
+        with:
+          repository: bakobo/id-law-kit
+          path: .id-law-kit
+          token: ${{ steps.kit-reader.outputs.token }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .id-law-kit
+
+      - name: Verify the corpus holds together
+        run: python tools/verify.py
+
+      - name: Verify every quotation still reproduces
+        run: python tools/check-quotes.py
