@@ -27,6 +27,10 @@ Three layers at two grains, written to three directories, each with its own `MAN
    (`this.i` @q3dsvsrl).
 5. **Extraction.** On the delegated layer the stored text is the publisher's own, gated by ours
    (`this.i` @yt6p5u4j), and refused outright if it reads as mojibake (`tools/indian.py`).
+6. **Truncation.** `lawcorpus.completeness.check_not_truncated` — a round length with a
+   non-terminator ending — runs on every text no second extraction vouches for: the judgments and
+   the DPDP oracle. On the delegated layer it is a second trigger for `indian.check_length`'s
+   fallback rather than a refusal. `this.i` @giyb7fgi.
 
     python3 tools/harvest.py                 # everything
     python3 tools/harvest.py acts
@@ -50,6 +54,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import candidates as C  # noqa: E402
 import indiacode as IC  # noqa: E402
 import indian  # noqa: E402
+from lawcorpus.completeness import TruncatedTextError, check_not_truncated  # noqa: E402
 from lawcorpus.errors import LawcorpusError  # noqa: E402
 from lawcorpus.manifest import Manifest, ManifestItem  # noqa: E402
 from lawcorpus.normalise import search_key  # noqa: E402
@@ -179,6 +184,13 @@ def dpdp_oracle(client: IC.IndiaCode, items: list, numbers: list) -> None:
     if published is None:
         raise HarvestError("The DPDP Act's India Code item carries no TEXT bitstream to check against.")
     text = client.content(published).decode("utf-8", "replace")
+    # The oracle is only as long as the publisher served it. India Code's TEXT bundle for the DPDP
+    # *Rules* stops at exactly 100,000 characters (`this.i` @ah7ssl3s), and a capped oracle would
+    # report the sections past the cap as absent from the Act — the right refusal for the wrong
+    # reason, sending the next reader after a publishing error that is really a transport one.
+    # `check_length` cannot be used here: there is no second extraction of this artefact to compare
+    # against. `this.i` @giyb7fgi.
+    check_not_truncated(text, "India Code's ACT-level text of the DPDP Act")
     found = {str(p) for p in scan(text, "", terminator=r"\.")}
     missing = [n for n in numbers if n not in found]
     if missing:
@@ -414,7 +426,11 @@ def harvest_one_delegated(client: IC.IndiaCode, spec, store: CorpusStore, vocab:
         say(f"    {spec.item_id}: headings our extraction sees and theirs does not: {only_ours}")
     try:
         indian.check_length(their_text, our_text, spec.item_id)
-    except indian.ExtractionRefused as e:
+        # Second trigger for the same fallback, and it needs no second extraction: a round length
+        # with a non-terminator ending. `check_length` is the better diagnosis where ours exists,
+        # so it runs first; this one is what would still see the cap if it did not. @giyb7fgi.
+        check_not_truncated(their_text, f"India Code's own text of {spec.item_id}")
+    except (indian.ExtractionRefused, TruncatedTextError) as e:
         say(f"    {spec.item_id}: falling back to our own extraction — {e.message}")
         source, text = "our extraction, layout=False", our_text
         qualifier = (
@@ -505,6 +521,10 @@ def harvest_judgments() -> None:
     for spec in C.JUDGMENTS:
         raw = http_get(spec.url, f"{spec.item_id}.pdf")
         text = pdf_text(raw)
+        # The only completeness control this layer has. A judgment is fetched whole from
+        # api.sci.gov.in with no second extraction to compare against and no declared inventory of
+        # paragraphs, so a truncated response would look exactly like a shorter judgment. @giyb7fgi.
+        check_not_truncated(text, spec.item_id)
         indian.check_latin(text, spec.item_id, spec.expect_phrase)
         for phrase in spec.expect_phrase:
             if search_key(phrase) not in search_key(text):
