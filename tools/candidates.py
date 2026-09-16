@@ -298,7 +298,7 @@ FOREIGN_CA_REGULATION = Delegated(
     "a Regulatory Authority) Regulation, 2013",
     expect_title="Recognition of Foreign Certifying Authorities",
     expect_phrase=("shall not issue digital signature certificates to Indian nationals",),
-    unquotable="Refused by hand on 2026-09-16, after the automatic guards let it through. Its "
+    unquotable="~4uto Refused by hand on 2026-09-16, after the automatic guards let it through. Its "
     "out-of-vocabulary rate against the Act layer's own words is 0.62, against 0.15–0.40 for every "
     "sound instrument here — but that spread also covers two notifications whose English is perfect, "
     "and the windowed soundness test passes the passage that matters, so a "
@@ -389,13 +389,13 @@ discovering the gap. `method.md` §8: scope is a file, not a vibe.
   UIDAI as an employer and adjudicator, not about the credential or about who may verify it.
 - **The Aadhaar (Payment of Fees for Performance of Authentication) Regulations, 2023.** Pricing,
   and reachable in a later pass if a finding ever needs it.
-- **Two judgments named in the spike's work-list and not retrieved**: Binoy Viswam v. Union of
+- **~7hvq Three judgments named in the spike's work-list and not retrieved**: Binoy Viswam v. Union of
   India (2017) on s. 139AA of the Income Tax Act, Beghar Foundation (2021) dismissing the review
   petitions, and Rojer Mathew (2019) referring the Money Bill question onward. Each needs its diary
   number looked up by hand on a captcha-gated search surface before the deterministic PDF URL can
   be built, and none of them changes a disposition this corpus records. Their absence is why no
   finding here asserts that the 2018 holding is final.
-- **Everything on `backend.uidai.gov.in` and `ovse.uidai.gov.in`** — the OVSE Handbook, the list of
+- **~4q76 Everything on `backend.uidai.gov.in` and `ovse.uidai.gov.in`** — the OVSE Handbook, the list of
   registered OVSEs, the registration portal, most UIDAI circulars. Those hosts are a TCP blackhole
   from this egress, which is itself recorded as a finding rather than worked around.
 """
