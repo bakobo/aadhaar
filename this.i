@@ -150,6 +150,50 @@ A checkable corpus of India's Aadhaar and data-protection regime = goal:
         corpus. Rejected also: trusting the publisher's text alone, which leaves one source
         vouching for itself. Tradeoff: the stored text is a derivative we did not produce, so a
         publisher-side extraction bug is ours too, which is what the control is for.
+      children:
+        The publisher's text is preferred and does not win = decision:
+          id: ah7ssl3s
+          why: >
+            The control found a publisher-side bug on its first run, which is the case @yt6p5u4j
+            named and did not say what to do about. India Code's TEXT bundle for the Digital
+            Personal Data Protection Rules, 2025 stops at exactly 100,000 characters, mid-sentence,
+            with no marker; our own extraction of the same PDF runs to 119,414 and ends with the
+            printer's colophon. Every other document here has a publisher text 1.01–1.27 times the
+            length of ours, because ours loses lines to the watermark, so a publisher text shorter
+            than ours is the signature of a truncated tail. Chose to fall back to our own extraction
+            for that instrument, stored with a quotation_qualifier saying so, rather than refusing an
+            instrument we can read or storing a truncated one. In layout=False the watermark sits on
+            lines of its own instead of displacing the body, so the fallback copy is polluted and not
+            disordered, which is the difference that makes it quotable at all.
+            Rejected: refusing the document. The DPDP Rules are the operative instrument for the
+            whole DPDP layer and nothing else carries their text. Rejected also: a length check
+            alone — an inventory comparison was written first, and it cannot see this failure,
+            because a schedule at the end of an instrument restarts its numbering and contributes no
+            heading the body has not already used.
+
+        Soundness is measured in windows, and where the measurement runs out, a person reads = decision:
+          id: nppnqlxn
+          why: >
+            The mojibake guard was first written over whole-document rates, and it refused S.O.
+            2927(E) — a commencement notification whose English is perfect. Its Hindi is set in a
+            legacy non-Unicode Devanagari font, so it extracts as Latin rubbish and drags the
+            document's averages to exactly where a genuinely corrupt document sits. A gate that
+            refuses good documents is a gate somebody turns off, which `method.md` §6 already
+            records from thai.py. So the measurement is windowed: a document passes if 70% of its
+            60-token windows read as English, and a document below that is stored only if every
+            phrase it was declared for sits inside a window that does read. Clean documents run
+            0.73–1.00; the damaged ones run 0.29, 0.32 and 0.50.
+            And then the limit, which is the part worth recording: the 2013 foreign-CA Regulation
+            passes that test and is still not quotable. Its damage is letter substitution that keeps
+            the vowels, the case and the word count — "Certifling", "ceftificates", "ln these
+            regulations", "ofaudit" — so the sentence we want is intact and its neighbours are
+            wrong in ways no statistic tried here can see. An out-of-vocabulary rate against the
+            corpus's own words separates it whole-document (0.62 against 0.15–0.40) and collapses
+            around the passage that matters (0.195 against a sound document's 0.200). Chose to keep
+            that number as a reported diagnostic and to refuse the document **by hand**, in
+            candidates.py, with the reason written where the refusal is. Rejected: tuning a
+            threshold until it excluded this one document, which would produce a gate that passes
+            everything it has not already seen.
 
     The next_section chain is a shape oracle, and it is blind where it matters most = decision:
       id: 6v3ks6eo
